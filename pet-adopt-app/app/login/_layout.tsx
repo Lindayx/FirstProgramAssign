@@ -8,7 +8,7 @@ export default function AuthRoutesLayout() {
 
     if (isSignedIn) {
         // if user already signed in, redirect to home page
-        return <Redirect href={'../home/home.jsx'} />
+        return <Redirect href={'/'} />
     }
 
     return <Stack />

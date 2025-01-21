@@ -73,6 +73,26 @@ export default function LoginScreen() {
               }}>Sign In!</Text>
               
            </Pressable>
+
+           <Pressable 
+              style={{
+                  padding:14,
+                  marginTop:100,
+                  backgroundColor:Colors.PRIMARY,
+                  width:'100%',
+                  borderRadius:14
+              }}
+
+              onPress={() => router.push('/login/google-sign-in')}
+          > 
+            
+              <Text style={{
+                  fontFamily:'outfit-medium',
+                  fontSize:20,
+                  textAlign:'center'
+              }}>Google Sign In!</Text>
+              
+           </Pressable>
       </View>
     </View>
   )
