@@ -8,7 +8,7 @@ export default function SignUpScreen() {
     // useSignUp hook is being used to create our sign up flow.
     // User signs up using their email and password, receiving an email verification code to confirm their email
     const router = useRouter();
-
+    
     const [emailAddress, setEmailAddress] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [pendingVerification, setPendingVerification] = React.useState(false);
