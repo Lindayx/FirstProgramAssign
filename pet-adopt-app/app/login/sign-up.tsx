@@ -62,7 +62,7 @@ const onVerifyPress = async() => {
 
 if (pendingVerification) {
     return (
-        <> 
+        <View> 
             <Text>Verify your email</Text>
             
             <TextInput
@@ -72,13 +72,13 @@ if (pendingVerification) {
             />
 
             <Button title="Verify" onPress={onVerifyPress}/>
-        </>
+        </View>
     )
 }
 
 return (
     <View>
-        <> {/* shorthand way to group multiple elements without intropucing wrappers into struct */}
+        {/* <> shorthand way to group multiple elements without intropucing wrappers into struct */}
         <Text>Sign Up Cat Wizard!</Text>
 
         <TextInput 
@@ -100,7 +100,7 @@ return (
          onPress={onSignUpPress}
         />
 
-        </>
+        {/* </> */}
     </View>
 )
 

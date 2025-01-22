@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable } from 'react-native'
+import { ScrollView, View, Text, Image, Pressable } from 'react-native'
 import React from 'react'
 import Colors from '../constants/Colors'
 import { useRouter } from "expo-router"
@@ -8,10 +8,12 @@ export default function LoginScreen() {
   const router = useRouter();
 
   return (
-    <View style={{
+    <ScrollView
+      contentContainerStyle={{
         backgroundColor:Colors.WHITE,
-        height:'100%'
-    }}>
+        paddingBottom:20,
+      }}
+    >
       <Image source={require('../assets/images/login.png')}
         style={{
             width:'100%',
@@ -37,7 +39,7 @@ export default function LoginScreen() {
           <Pressable 
               style={{
                   padding:14,
-                  marginTop:100,
+                  marginTop:20,
                   backgroundColor:Colors.PRIMARY,
                   width:'100%',
                   borderRadius:14
@@ -57,7 +59,7 @@ export default function LoginScreen() {
            <Pressable 
               style={{
                   padding:14,
-                  marginTop:100,
+                  marginTop:20,
                   backgroundColor:Colors.PRIMARY,
                   width:'100%',
                   borderRadius:14
@@ -77,7 +79,7 @@ export default function LoginScreen() {
            <Pressable 
               style={{
                   padding:14,
-                  marginTop:100,
+                  marginTop:20,
                   backgroundColor:Colors.PRIMARY,
                   width:'100%',
                   borderRadius:14
@@ -94,6 +96,6 @@ export default function LoginScreen() {
               
            </Pressable>
       </View>
-    </View>
+    </ScrollView>
   )
 }
