@@ -29,7 +29,7 @@ export default function Page() {
 
   const onPress = React.useCallback(async () => {
     try {
-      const redirectUrl = Linking.createURL('../', { scheme: 'myapp' });
+      const redirectUrl = Linking.createURL('/(tabs)/home', { scheme: 'myapp' });
       const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow({
         redirectUrl,
       });
