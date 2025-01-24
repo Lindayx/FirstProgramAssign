@@ -15,7 +15,7 @@ const Home = () => {
       {/* Slider */}
         <Slider />
       {/* Petlist + Cateory */}
-        {/* <PetListByCategory /> */}
+        <PetListByCategory />
       {/* List Of Pets */}
 
       {/* Add New Pet Option */}

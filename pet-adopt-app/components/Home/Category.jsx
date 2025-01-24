@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { collection, getDocs } from 'firebase/firestore'
 import {db} from './../../config/FirebaseConfig'
-import { FlatList } from 'react-native-gesture-handler';
 import Colors from './../../constants/Colors'
 
 export default function Category() {
