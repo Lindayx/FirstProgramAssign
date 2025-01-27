@@ -18,13 +18,13 @@ export default function TabLayout() {
             tabBarIcon:({color})=><Ionicons name="home" size={24} color={color} />
         }}
         />
-        <Tabs.Screen name='favorite'
+        {/* <Tabs.Screen name='favorite'
         options={{
             title:'Favorite',
             headerShown:false,
             tabBarIcon:({color})=><Ionicons name="heart" size={24} color={color} />
         }}
-        />
+        /> */}
         <Tabs.Screen name='inbox'
         options={{
             title:'Inbox',

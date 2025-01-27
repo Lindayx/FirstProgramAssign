@@ -25,7 +25,7 @@ export default function PetListByCategory() {
     const querySnapshot = await getDocs(q);
 
     querySnapshot.forEach(doc=>{
-      console.log(doc.data());
+      // console.log(doc.data());
       setPetList(petList=>[...petList,doc.data()])
     })
     setLoader(false);
