@@ -7,12 +7,16 @@ import PetListItem from './PetListItem'
 
 
 export default function PetListByCategory() {
-
+  const [curCategory, setCurCategory] = useState('Dogs');
   const [petList,setPetList]=useState([]);
   const [loader, setLoader]=useState(false);
   useEffect(()=>{
     GetPetList('Dogs')
   },[])
+
+  // useEffect((curCategory)=>{
+  //   GetPetList(curCategory)
+  // },[curCategory])
 
   /**
    * Used to get Pet List on Category Selection
@@ -29,6 +33,7 @@ export default function PetListByCategory() {
       setPetList(petList=>[...petList,doc.data()])
     })
     setLoader(false);
+    setCurCategory(category);
   }
 
   return (
@@ -39,7 +44,7 @@ export default function PetListByCategory() {
         style={{marginTop:10}}
         horizontal={true}
         refreshing={loader}
-        onRefresh={()=>GetPetList('Dogs')}
+        onRefresh={()=>GetPetList(curCategory)}
         renderItem={({item,index})=>(
           <PetListItem pet={item}/>
         )}
