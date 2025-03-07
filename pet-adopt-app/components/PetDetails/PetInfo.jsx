@@ -32,7 +32,7 @@ export default function PetInfo({pet}) {
                     color:Colors.GRAY
                 }}>{pet?.address}</Text>
             </View>
-            <MarkFav pet={pet}/>
+            {/* <MarkFav pet={pet}/> */}
         </View>
     </View>
   )

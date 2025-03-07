@@ -11,9 +11,9 @@ export default function MarkFav({pet, color='black'}) {
         user && GetFav();
     }, [user]);
 
-    useEffect(() => {
-        user && GetFav();
-    }, [favList]); // our own code
+    // useEffect(() => {
+    //     user && GetFav();
+    // }, [favList]); // our own code
 
     const GetFav = async () => {
         const result = await Shared.GetFavList(user);
