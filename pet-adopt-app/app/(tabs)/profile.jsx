@@ -10,8 +10,9 @@ export default function Profile() {
 
   const handleSignOut = async () => {
     try {
+      console.log("fuck")
       await signOut()
-      navigation.navigate('/login')
+      navigation.navigate('login')
     } catch (error) {
       console.error('Error during sign-out:', error)
       // Optionally, display an error message to the user
