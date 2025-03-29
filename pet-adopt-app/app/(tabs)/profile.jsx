@@ -9,7 +9,6 @@ export default function Profile() {
   const navigation = useNavigation()
 
   const handleSignOut = async () => {
-    console.log("what the fuck?")
     await signOut()
 
     navigation.navigate('/login')
