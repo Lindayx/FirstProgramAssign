@@ -9,9 +9,13 @@ export default function Profile() {
   const navigation = useNavigation()
 
   const handleSignOut = async () => {
-    await signOut()
-
-    navigation.navigate('/login')
+    try {
+      await signOut()
+      navigation.navigate('/login')
+    } catch (error) {
+      console.error('Error during sign-out:', error)
+      // Optionally, display an error message to the user
+    }
   }
   return (
     <View>
