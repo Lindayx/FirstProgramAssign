@@ -10,7 +10,6 @@ export default function Profile() {
 
   const handleSignOut = async () => {
     try {
-      console.log("fuck")
       await signOut()
       navigation.navigate('login')
     } catch (error) {
