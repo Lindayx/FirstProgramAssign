@@ -23,6 +23,11 @@ export default function Home(){
 
       {/* Add New Pet Option */}
       <Link href = {'/add-new-pet'}
+      onClick={
+        () => {
+          console.log("Add New Pet")
+        }
+      }
       style={styles.addNewPetContainer}>
         <MaterialIcons name="pets" size={24} color={Colors.PRIMARY} />
         <Text style={{
