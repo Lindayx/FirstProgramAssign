@@ -11,8 +11,6 @@ import { doc, getDoc } from 'firebase/firestore';
 export default function FeaturesChart() {
   const ref = useRef();
 
-  const [categoryData, setCategoryData] = useState(null);
-
   const [chartData, setChartData] = useState(null);
 
   //useEffect to fetch data from firebase, store in chartData and categoryData
@@ -26,13 +24,13 @@ export default function FeaturesChart() {
 
         if (docSnap.exists()) {
           console.log("Document data:" , docSnap.data());
-          
+
           //format data
           const formattedData = Object.entries(docSnap.data()).map(([key, value]) => ({
             label: key,
             value: value
           }));
-          
+
           console.log("Formatted Data: ", formattedData);
 
           //we might not even need these lol
@@ -59,12 +57,25 @@ export default function FeaturesChart() {
       console.log("No chart data");
       return;
     }
-    console.log("Chart Data: ", chartData);
-    const svg  = d3.select(ref.current)
-    .attr('width', 600)
-    .attr('height', 600)
-    .append('g')
-    .attr('transform', 'translate(300, 300)'); //center pie chart
+
+    console.log("Chart Data:", chartData);
+
+    const svg = d3.select(ref.current)
+      .attr('width', 600)
+      .attr('height', 600);
+
+    // Add a title to the chart
+    svg.append('text')
+      .attr('x', 300) 
+      .attr('y', 20) //title centered at the top
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '20px')
+      .attr('font-weight', 'bold')
+      .attr('fill', 'white')
+      .text('Pet Categories'); 
+
+    const g = svg.append('g')
+      .attr('transform', 'translate(300,300)');
 
     const radius = 200;
 
@@ -72,29 +83,30 @@ export default function FeaturesChart() {
 
     const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
-    const outerArc = d3.arc().innerRadius(radius).outerRadius(radius + 20); // For the labels
+    const outerArc = d3.arc().innerRadius(radius + 20).outerRadius(radius + 20);
 
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     const pieData = pie(chartData);
 
-    svg.selectAll('path')
+    g.selectAll('path')
       .data(pieData)
       .enter()
       .append('path')
-      .attr('d', arc) // Use the arc generator to draw the slices
-      .attr('fill', (d, i) => color(i)) // Assign colors
-      .attr('stroke', 'white') // Add a border
+      .attr('d', arc) 
+      .attr('fill', (d, i) => color(i)) 
+      .attr('stroke', 'white')
       .attr('stroke-width', 2);
 
-    svg.selectAll('text')
+    // add labels
+    g.selectAll('text')
       .data(pieData)
       .enter()
       .append('text')
       .attr('transform', d => {
-        const centroid = arc.centroid(d); // Get the center of the slice
+        const centroid = arc.centroid(d); 
         const [x, y] = centroid;
-        const isSmallSlice = d.endAngle - d.startAngle < 0.5; // Check if the slice is small
+        const isSmallSlice = d.endAngle - d.startAngle < 0.5; //if isSmallSlice use outer arc
         return isSmallSlice ? `translate(${outerArc.centroid(d)})` : `translate(${x},${y})`;
       })
       .attr('text-anchor', d => {
@@ -104,15 +116,18 @@ export default function FeaturesChart() {
       .attr('font-size', '12px')
       .attr('fill', d => {
         const isSmallSlice = d.endAngle - d.startAngle < 0.2;
-        return isSmallSlice ? 'black' : 'white'; // Change color based on slice size
+        return isSmallSlice ? 'black' : 'white'; // adjust for color
       })
       .text(d => {
         const percentage = ((d.value / d3.sum(chartData, d => d.value)) * 100).toFixed(1);
-        return `${d.data.label} (${d.data.value}, ${percentage}%)`; // Show label, quantity, and percentage
+        return `${d.data.label} (${d.data.value}, ${percentage}%)`;
       });
 
   }, [chartData]);
 
-  return <svg ref={ref}></svg>;
-
+  return (
+    <div className="flex flex-col items-center">
+      <svg ref={ref}></svg>
+    </div>
+  );
 }
