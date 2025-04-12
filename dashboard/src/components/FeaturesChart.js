@@ -72,6 +72,8 @@ export default function FeaturesChart() {
 
     const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
+    const outerArc = d3.arc().innerRadius(radius).outerRadius(radius + 20); // For the labels
+
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     const pieData = pie(chartData);
@@ -86,14 +88,28 @@ export default function FeaturesChart() {
       .attr('stroke-width', 2);
 
     svg.selectAll('text')
-    .data(pieData)
-    .enter()
-    .append('text')
-    .attr('transform', d => `translate(${arc.centroid(d)})`) // Position labels in the center of slices
-    .attr('text-anchor', 'middle')
-    .attr('font-size', '12px')
-    .attr('fill', 'black')
-    .text(d => d.data.label); // Use the "label" field for the text
+      .data(pieData)
+      .enter()
+      .append('text')
+      .attr('transform', d => {
+        const centroid = arc.centroid(d); // Get the center of the slice
+        const [x, y] = centroid;
+        const isSmallSlice = d.endAngle - d.startAngle < 0.5; // Check if the slice is small
+        return isSmallSlice ? `translate(${outerArc.centroid(d)})` : `translate(${x},${y})`;
+      })
+      .attr('text-anchor', d => {
+        const isSmallSlice = d.endAngle - d.startAngle < 0.2;
+        return isSmallSlice ? (outerArc.centroid(d)[0] > 0 ? 'start' : 'end') : 'middle';
+      })
+      .attr('font-size', '12px')
+      .attr('fill', d => {
+        const isSmallSlice = d.endAngle - d.startAngle < 0.2;
+        return isSmallSlice ? 'black' : 'white'; // Change color based on slice size
+      })
+      .text(d => {
+        const percentage = ((d.value / d3.sum(chartData, d => d.value)) * 100).toFixed(1);
+        return `${d.data.label} (${d.data.value}, ${percentage}%)`; // Show label, quantity, and percentage
+      });
 
   }, [chartData]);
 
