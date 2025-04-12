@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
+import { doc, getDoc, setDoc, updateDoc, increment } from "firebase/firestore"
 import { db } from "./../config/FirebaseConfig"
 
 const GetFavList=async(user)=>{
@@ -24,7 +24,23 @@ const UpdateFav=async(user,favorites)=>{
 
     }
 }
+
+const UpdateCateCount=async(category, isIncrement)=>{
+    const docSnap=await getDoc(doc(db,'CategoryCounts',category));
+    const count = docSnap.data().count;
+    // console.log(count);
+    const docRef = doc(db, 'CategoryCounts', category);
+    try{
+        await updateDoc(docRef, {
+            count: increment(isIncrement)
+        });
+    }catch(e){
+
+    }  
+}
+
 export default {
     GetFavList,
-    UpdateFav
+    UpdateFav,
+    UpdateCateCount
 }
