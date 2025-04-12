@@ -25,12 +25,14 @@ export default function MarkFav({pet, color='black'}) {
         const favResult = favList;
         favResult.push(pet.id);
         await Shared.UpdateFav(user,favResult);
+        await Shared.UpdateCateCount(pet.category, 1);
         GetFav();
     }
 
     const removeFromFav=async()=>{
         const favResult = favList.filter(item=>item!=pet.id);
         await Shared.UpdateFav(user,favResult);
+        await Shared.UpdateCateCount(pet.category, -1);
         GetFav();
     }
     return (
