@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, Image } from 'react-native';
 import Colors from '../../constants/Colors';
 import DeleteConfirmationModal from './DeleteConfirmation';
+import { useUser } from '@clerk/clerk-expo'; // Import useUser to get the current user
 
 export default function PetInfo({ pet }) {
   const [isModalVisible, setModalVisible] = useState(false);
+  const { user } = useUser(); // Get the logged-in user
 
   const handleDeletePress = () => {
     setModalVisible(true);
@@ -13,6 +15,9 @@ export default function PetInfo({ pet }) {
   const handleCloseModal = () => {
     setModalVisible(false);
   };
+
+  // Get the logged-in user's primary email
+  const primaryEmail = user?.emailAddresses?.find(email => email.id === user.primaryEmailAddressId)?.emailAddress;
 
   return (
     <View>
@@ -60,24 +65,27 @@ export default function PetInfo({ pet }) {
             alignItems: 'center',
           }}
         >
-          <Text
-            style={{
-              fontSize: 20,
-              marginLeft: 10,
-              backgroundColor: 'red',
-              color: 'white',
-              borderWidth: 1,
-              borderColor: 'red',
-              borderRadius: 15,
-              width: 30,
-              height: 30,
-              textAlign: 'center',
-              lineHeight: 30,
-            }}
-            onPress={handleDeletePress}
-          >
-            X
-          </Text>
+          {/* Conditionally render the delete button if the logged-in user added the pet */}
+          {primaryEmail === pet.email && (
+            <Text
+              style={{
+                fontSize: 20,
+                marginLeft: 10,
+                backgroundColor: 'red',
+                color: 'white',
+                borderWidth: 1,
+                borderColor: 'red',
+                borderRadius: 15,
+                width: 30,
+                height: 30,
+                textAlign: 'center',
+                lineHeight: 30,
+              }}
+              onPress={handleDeletePress}
+            >
+              X
+            </Text>
+          )}
         </View>
       </View>
       <DeleteConfirmationModal
