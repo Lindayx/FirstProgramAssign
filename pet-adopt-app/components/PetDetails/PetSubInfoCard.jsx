@@ -26,7 +26,7 @@ export default function PetSubInfoCard({icon,title,value}) {
         }}>
             <Text style={{
                 fontFamily:'outfit',
-                fontSize:16,
+                fontSize:20,
                 color:Colors.GRAY
             }}>{title}</Text>
             <Text style={{
