@@ -26,13 +26,13 @@ const UpdateFav=async(user,favorites)=>{
 }
 
 const UpdateCateCount=async(category, isIncrement)=>{
-    const docSnap=await getDoc(doc(db,'CategoryCounts',category));
-    const count = docSnap.data().count;
+    // const docSnap=await getDoc(doc(db, 'DashboardData', 'PetCategories'));
+    // const count = docSnap.data().Bird;
     // console.log(count);
-    const docRef = doc(db, 'CategoryCounts', category);
+    const docRef = doc(db, 'DashboardData', 'PetCategories');
     try{
         await updateDoc(docRef, {
-            count: increment(isIncrement)
+            [category]: increment(isIncrement)
         });
     }catch(e){
 
