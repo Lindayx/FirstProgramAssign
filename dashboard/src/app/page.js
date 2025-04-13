@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import FeaturesChart from "@/components/FeaturesChart";
 import TestButton from "@/components/TestButton";
+import GenderChart from "@/components/GenderChart";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <Navbar/>
       <div className=""></div> {/* pardon me if this is too janky*/}
       <FeaturesChart />
+      <GenderChart />
       <TestButton />
 
       <div className="h-[200vh]"></div>
