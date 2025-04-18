@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import FeaturesChart from "@/components/FeaturesChart";
 import TestButton from "@/components/TestButton";
 import GenderChart from "@/components/GenderChart";
+// import AgeLineGraph from "@/components/AgeLineGraph";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <FeaturesChart />
       <GenderChart />
       <TestButton />
+      {/* <AgeLineGraph /> */}
 
       <div className="h-[200vh]"></div>
     </div>
