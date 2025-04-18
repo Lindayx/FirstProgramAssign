@@ -57,19 +57,17 @@ export default function FeaturesChart() {
       return;
     }
     // theme detection
-    const isDarkMode =
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches; // feature detects from os whether user on light/dark
+    // const isDarkMode =
+      // window.matchMedia &&
+      // window.matchMedia("(prefers-color-scheme: dark)").matches; // feature detects from os whether user on light/dark
     // const backgroundColor = isDarkMode? '#1e1e1e' : '#ffffff';
+    const isDarkMode = true; // for testing purposes
     const sliceLabelColor = isDarkMode ? "#ffffff" : "#000000";
     const smallSliceColor = "black";
 
     console.log("Chart Data:", chartData);
 
-    const svg = d3
-      .select(ref.current)
-      .attr("width", 600)
-      .attr("height", 660); // increased height for LEGEND
+    const svg = d3.select(ref.current).attr("width", 600).attr("height", 660); // increased height for LEGEND
 
     // svg.selectAll('*').remove(); // clear+draw background
     // svg.append('rect')
@@ -148,42 +146,44 @@ export default function FeaturesChart() {
         return `${d.data.label} (${d.data.value}, ${percentage}%)`;
       });
 
-      // LEGEND ADDITION
-  const legendY = 540;
-  const boxSize = 16; // size of legend box
-  const boxGap = 6; // gap between legend boxes
-  const rowHeight = 24; // height of each row in the legend
+    // LEGEND ADDITION
+    const legendY = 500;
+    const boxSize = 16; // size of legend box
+    const boxGap = 6; // gap between legend boxes
+    const rowHeight = 24; // height of each row in the legend
 
-  const legend = svg
-    .append("g")
-    .attr("class", "legend")
-    .attr("transform", `translate(20, ${legendY}`); // we want this below the pie
+    const legend = svg
+      .append("g")
+      .attr("class", "legend")
+      .attr("transform", `translate(20, ${legendY}`);
 
-  // lets connect our actual data to LEGEND
-  // for each category in chart data, we make one <g> row 
-  const legendItems = legend.selectAll(".legend-item")
+    // lets connect our actual data to LEGEND
+    // for each category in chart data, we make one <g> row
+    const legendItems = legend
+      .selectAll(".legend-item")
       .data(chartData)
-      .enter().append("g")
+      .enter()
+      .append("g")
       .attr("class", "legend-item")
-      .attr("transform", (_, i) => `translate(0, ${i * rowHeight})`) // we space this w/ row height
+      .attr("transform", (_, i) => `translate(0, ${i * rowHeight})`); // we space this w/ row height
 
-      // coloring legend
-    legendItems.append("rect")
+    // coloring legend
+    legendItems
+      .append("rect")
       .attr("width", boxSize)
       .attr("height", boxSize)
-      .attr("fill", (_, i) => color(i)) // asscoaite pie chart colors to legend boxes
+      .attr("fill", (_, i) => color(i)); // asscoaite pie chart colors to legend boxes
 
-      // legend text/ render category name to right of each box
-      legendItems.append("text")
+    // legend text/ render category name to right of each box
+    legendItems
+      .append("text")
       .attr("x", boxSize + boxGap)
       .attr("y", boxSize / 2 + 4) // center text vertically
       .attr("font-size", "12px")
       .attr("fill", sliceLabelColor)
-      .text(d => d.label); // use the label from chart data
-
+      .text((d) => d.label); // use the label from chart data
   }, [chartData]);
 
-  
   return (
     <div className="flex flex-col items-center">
       <svg ref={ref}></svg>
