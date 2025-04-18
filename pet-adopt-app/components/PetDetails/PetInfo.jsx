@@ -1,33 +1,52 @@
 import React, { useState } from 'react';
 import { View, Text, Image, Alert } from 'react-native';
 import Colors from '../../constants/Colors';
-import { getFirestore, doc, deleteDoc } from 'firebase/firestore';
 import app from '../../config/FirebaseConfig';
 import { useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
+import {
+  getFirestore,
+  doc,
+  deleteDoc,
+  setDoc,
+  increment
+} from 'firebase/firestore';
 export default function PetInfo({ pet }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const { user } = useUser(); // Get the logged-in user
   const router = useRouter();
+  const db = getFirestore(app);
 
   const handleDelete = async () => {
-      try {
-        console.log(user?.emailAddress);
-        const primaryEmail = user?.emailAddresses?.find(email => email.id === user.primaryEmailAddressId)?.emailAddress;
-        if (primaryEmail !== pet.email) {
-          Alert.alert('Error', 'You are not authorized to delete this pet.');
-          return;
-        }
-  
-        const db = getFirestore(app);
-        const petDocRef = doc(db, 'Pets', pet.id);
-        await deleteDoc(petDocRef);
-        Alert.alert('Success', 'Pet deleted successfully');
-        router.push('/(tabs)/home');
-      } catch (error) {
-        console.error('Error deleting pet:', error);
+    try {
+      // ensure only the owner can delete
+      const primaryEmail = user?.emailAddresses
+        ?.find(e => e.id === user.primaryEmailAddressId)
+        ?.emailAddress;
+      if (primaryEmail !== pet.email) {
+        Alert.alert('Error', 'You are not authorized to delete this pet.');
+        return;
       }
-    };
+
+      const petDocRef = doc(db, 'Pets', pet.id);
+      // 1) delete the pet
+      await deleteDoc(petDocRef);
+
+      // 2) bump the deletion counter
+      const counterRef = doc(db, 'DashboardData', 'DeletedPets');
+      await setDoc(
+        counterRef,
+        { [pet.category || 'Unknown']: increment(1) },
+        { merge: true }
+      );
+
+      Alert.alert('Success', 'Pet deleted successfully');
+      router.push('/(tabs)/home');
+    } catch (error) {
+      console.error('Error deleting pet:', error);
+      Alert.alert('Error', 'Could not delete pet.');
+    }
+  };
 
 
   // Get the logged-in user's primary email
