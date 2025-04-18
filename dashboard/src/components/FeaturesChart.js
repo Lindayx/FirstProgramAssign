@@ -49,24 +49,25 @@ export default function FeaturesChart() {
     getData();
   }, []);
 
-  //useEffect to create chart
+  //drawing  chart and now adding legend
+
   useEffect(() => {
     if (!chartData) {
       console.log("No chart data");
       return;
     }
-
-    const isDarkMode =
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches; // feature detects from os whether user on light/dark
+    // theme detection
+    // const isDarkMode =
+      // window.matchMedia &&
+      // window.matchMedia("(prefers-color-scheme: dark)").matches; // feature detects from os whether user on light/dark
     // const backgroundColor = isDarkMode? '#1e1e1e' : '#ffffff';
+    const isDarkMode = true; // for testing purposes
     const sliceLabelColor = isDarkMode ? "#ffffff" : "#000000";
     const smallSliceColor = "black";
-    const titleColor = sliceLabelColor;
 
     console.log("Chart Data:", chartData);
 
-    const svg = d3.select(ref.current).attr("width", 600).attr("height", 600);
+    const svg = d3.select(ref.current).attr("width", 600).attr("height", 660); // increased height for LEGEND
 
     // svg.selectAll('*').remove(); // clear+draw background
     // svg.append('rect')
@@ -82,7 +83,7 @@ export default function FeaturesChart() {
       .attr("text-anchor", "middle")
       .attr("font-size", "20px")
       .attr("font-weight", "bold")
-      .attr("fill", titleColor)
+      .attr("fill", sliceLabelColor)
       .text("Pet Categories");
 
     const g = svg.append("g").attr("transform", "translate(300,300)");
@@ -144,6 +145,43 @@ export default function FeaturesChart() {
         ).toFixed(1);
         return `${d.data.label} (${d.data.value}, ${percentage}%)`;
       });
+
+    // LEGEND ADDITION
+    const legendY = 500;
+    const boxSize = 16; // size of legend box
+    const boxGap = 6; // gap between legend boxes
+    const rowHeight = 24; // height of each row in the legend
+
+    const legend = svg
+      .append("g")
+      .attr("class", "legend")
+      .attr("transform", `translate(20, ${legendY}`);
+
+    // lets connect our actual data to LEGEND
+    // for each category in chart data, we make one <g> row
+    const legendItems = legend
+      .selectAll(".legend-item")
+      .data(chartData)
+      .enter()
+      .append("g")
+      .attr("class", "legend-item")
+      .attr("transform", (_, i) => `translate(0, ${i * rowHeight})`); // we space this w/ row height
+
+    // coloring legend
+    legendItems
+      .append("rect")
+      .attr("width", boxSize)
+      .attr("height", boxSize)
+      .attr("fill", (_, i) => color(i)); // asscoaite pie chart colors to legend boxes
+
+    // legend text/ render category name to right of each box
+    legendItems
+      .append("text")
+      .attr("x", boxSize + boxGap)
+      .attr("y", boxSize / 2 + 4) // center text vertically
+      .attr("font-size", "12px")
+      .attr("fill", sliceLabelColor)
+      .text((d) => d.label); // use the label from chart data
   }, [chartData]);
 
   return (
