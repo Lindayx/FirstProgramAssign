@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -18,11 +18,15 @@ export default function Messaging() {
   const [loading, setLoading] = useState(false)
   const [emailValid, setEmailValid] = useState(false)
   const [searchPerformed, setSearchPerformed] = useState(false)
+  // track search bar focus
+  const [isSearchActive, setIsSearchActive] = useState(false)
   // Simple email regex for validation
   const emailRegex = /^\S+@\S+\.\S+$/
 
   const router = useRouter()
   const { user, isLoaded } = useUser()
+  // check for existing chats
+  const [existingChats, setExistingChats] = useState([])
   // Trigger search only when email is valid
   const handleSearch = async () => {
     const trimmed = emailSearch.trim()
@@ -108,22 +112,73 @@ export default function Messaging() {
     router.push(`/chat/${encodeURIComponent(chatId)}`)
   }
 
+  // load existing chats
+  useEffect(() => {
+    const loadChats = async () => {
+      if (!isLoaded) return
+      const currentEmail =
+        user.primaryEmailAddress?.emailAddress ||
+        user.emailAddresses?.[0]?.emailAddress ||
+        ''
+      try {
+        //fetch UserFavPet doc
+        const favQ = query(
+          collection(db, 'UserFavPet'),
+          where('email', '==', currentEmail)
+        )
+        const favSnap = await getDocs(favQ)
+        if (favSnap.empty) {
+          setExistingChats([])
+          return
+        }
+        const favData = favSnap.docs[0].data()
+        const chatIds = Array.isArray(favData.chatIds) ? favData.chatIds : []
+        const chats = []
+        for (const id of chatIds) {
+          const chatDocRef = doc(db, 'Chat', id)
+          const chatDocSnap = await getDoc(chatDocRef)
+          if (!chatDocSnap.exists()) continue
+          const cd = chatDocSnap.data()
+          if (Array.isArray(cd.participants)) {
+            const other = cd.participants.find((p) => p !== currentEmail)
+            if (other) chats.push({ id, otherEmail: other })
+          }
+        }
+        setExistingChats(chats)
+      } catch (err) {
+        console.error('Error loading existing chats:', err)
+        setExistingChats([])
+      }
+    }
+    loadChats()
+  }, [isLoaded, user])
+
   return (
     <View style={styles.container}>
+      {/* Search for new user */}
       <TextInput
         style={styles.input}
         placeholder="Search by email"
         value={emailSearch}
         onChangeText={(text) => {
           setEmailSearch(text)
-          setEmailValid(emailRegex.test(text.trim()))
+          const valid = emailRegex.test(text.trim())
+          setEmailValid(valid)
+          if (text.trim() === '') {
+            setSearchPerformed(false)
+            setResults([])
+          }
         }}
+        onFocus={() => setIsSearchActive(true)}
+        onBlur={() => setIsSearchActive(false)}
         onSubmitEditing={handleSearch}
         autoCapitalize="none"
         keyboardType="email-address"
       />
       {emailSearch.length > 0 && !emailValid && (
-        <Text style={styles.errorText}>Please enter a valid email address.</Text>
+        <Text style={styles.errorText}>
+          Please enter a valid email address.
+        </Text>
       )}
       <TouchableOpacity
         style={[styles.button, !emailValid && styles.buttonDisabled]}
@@ -132,18 +187,18 @@ export default function Messaging() {
       >
         <Text style={styles.buttonText}>Search</Text>
       </TouchableOpacity>
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : searchPerformed && results.length === 0 ? (
-        <Text style={styles.notFoundText}>Email is not found!</Text>
-      ) : (
+      {/* Search results */}
+      {isSearchActive && (
         <FlatList
           data={results}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.resultItem}
-              onPress={() => openChat(item.email)}
+              onPress={() => {
+                setIsSearchActive(false)
+                openChat(item.email)
+              }}
             >
               <Text style={styles.resultText}>Email: {item.email}</Text>
               <Text style={styles.resultText}>
@@ -151,8 +206,33 @@ export default function Messaging() {
               </Text>
             </TouchableOpacity>
           )}
+          ListEmptyComponent={
+            searchPerformed ? (
+              <Text style={styles.notFoundText}>Email is not found!</Text>
+            ) : null
+          }
         />
       )}
+      {/* Existing chats */}
+      <Text style={styles.sectionTitle}>Chats</Text>
+      <View style={styles.divider} />
+      <FlatList
+        data={existingChats}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.resultItem}
+            onPress={() =>
+              router.push(`/chat/${encodeURIComponent(item.id)}`)
+            }
+          >
+            <Text style={styles.resultText}>{item.otherEmail}</Text>
+          </TouchableOpacity>
+        )}
+        ListEmptyComponent={
+          <Text style={styles.notFoundText}>No chats yet.</Text>
+        }
+      />
     </View>
   )
 }
@@ -194,6 +274,16 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginTop: 10,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#ddd',
+    marginVertical: 8,
   },
   resultItem: {
     padding: 10,
