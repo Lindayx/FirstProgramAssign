@@ -25,11 +25,11 @@ export default function TabLayout() {
             tabBarIcon:({color})=><Ionicons name="heart" size={24} color={color} />
         }}
         /> */}
-        <Tabs.Screen name='inbox'
+        <Tabs.Screen name='messaging'
         options={{
-            title:'Inbox',
+            title:'Messaging',
             headerShown:false,
-            tabBarIcon:({color})=><Ionicons name="chatbubble" size={24} color={color} />
+            tabBarIcon:({color})=><Ionicons name="chatbubbles" size={24} color={color} />
         }}        
         />
         <Tabs.Screen name='profile'
