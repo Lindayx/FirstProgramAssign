@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native'
+import { io } from 'socket.io-client'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useUser } from '@clerk/clerk-expo'
 import {
@@ -28,30 +29,48 @@ export default function ChatScreen() {
   const router = useRouter()
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
+  // WebSocket reference
+  const socketRef = useRef(null)
 
   useEffect(() => {
     if (!isLoaded || !chatId) return
-
+    // Initialize WebSocket connection and join room
+    const SOCKET_SERVER_URL = 'http://localhost:5000'
+    const socket = io(SOCKET_SERVER_URL)
+    socketRef.current = socket
+    socket.on('connect', () => {
+      console.log('Connected to socket server')
+      socket.emit('join', { chatId })
+    })
+    // Optionally handle incoming chat messages (if broadcasting via socket)
+    socket.on('chat_message', (msg) => {
+      setMessages((prev) => [...prev, msg])
+    })
+    // Fetch initial messages from Firestore
     const messagesRef = collection(db, 'Chat', chatId, 'messages')
     const q = query(messagesRef, orderBy('createdAt', 'asc'))
     const unsubscribe = onSnapshot(q, (snap) => {
       const msgs = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
       setMessages(msgs)
     })
-    return () => unsubscribe()
+    return () => {
+      unsubscribe()
+      socket.disconnect()
+    }
   }, [isLoaded, chatId])
 
-  const handleSend = async () => {
-    if (!text.trim() || !chatId || !isLoaded) return
+  // Send message via WebSocket; backend will persist to Firestore
+  const handleSend = () => {
+    if (!text.trim() || !chatId || !isLoaded || !socketRef.current) return
     const currentEmail =
       user.primaryEmailAddress?.emailAddress ||
       user.emailAddresses?.[0]?.emailAddress ||
       ''
-    const messagesRef = collection(db, 'Chat', chatId, 'messages')
-    await addDoc(messagesRef, {
+    // Emit chat_message event to backend
+    socketRef.current.emit('chat_message', {
+      chatId,
       text: text.trim(),
       sender: currentEmail,
-      createdAt: serverTimestamp(),
     })
     setText('')
   }
