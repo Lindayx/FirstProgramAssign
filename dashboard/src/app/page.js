@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import FeaturesChart from "@/components/FeaturesChart";
+import AgeBarGraph from "@/components/AgeBarGraph";
 import GenderChart from "@/components/GenderChart";
 import DeletedPetsChart from "@/components/DeletedPetsChart";
 
@@ -26,12 +27,17 @@ export default function Home() {
             <h2 className="text-xl font-semibold mb-4">DeletedPetsChart</h2>
             <DeletedPetsChart />
           </div>
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">DeletedPetsChart</h2>
+             <AgeBarGraph />
+          </div>
           
         </div>
       </main>
       <footer className="text-center py-4 bg-gray-800 text-white">
         © 2025 Pet Adoption Dashboard
       </footer>
+
     </div>
   );
 }
