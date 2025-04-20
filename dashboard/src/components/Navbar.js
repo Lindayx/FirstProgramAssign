@@ -14,16 +14,16 @@ export default function Navbar() {
         }
     }, []);
 
-    return (        
-        <nav 
-        ref={navRef}
-        className="fixed top-0 flex justify-between items-center w-full h-16 px-8 py-4 text-white bg-gray-800 bg-opacity-75 "
-        >
-            <div className="text-xl font-bold">Dashboard</div>
-            <div className="flex gap-8">
-                <a href="#" className="hover:text-gray-400">Pet Categories</a>
-                <a href="#" className="hover:text-gray-400">Contact</a>
+    return (
+        <nav className="bg-blue-600 text-white shadow-md">
+          <div className="container mx-auto flex justify-between items-center py-4 px-6">
+            <div className="text-2xl font-bold">Dashboard</div>
+            <div className="flex space-x-6">
+              <a href="#" className="hover:text-gray-200">Pet Categories</a>
+              <a href="#" className="hover:text-gray-200">Contact</a>
+              <a href="#" className="hover:text-gray-200">Settings</a>
             </div>
+          </div>
         </nav>
-    );
+      );
 }

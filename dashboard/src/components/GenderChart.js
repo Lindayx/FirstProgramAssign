@@ -54,7 +54,6 @@ const GenderDistribution = () => {
 
   return (
     <div>
-      <h2>Gender Distribution</h2>
       <Pie data={chartData} />
     </div>
   );
