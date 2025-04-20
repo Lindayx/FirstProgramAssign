@@ -62,7 +62,7 @@ export default function FeaturesChart() {
       // window.matchMedia("(prefers-color-scheme: dark)").matches; // feature detects from os whether user on light/dark
     // const backgroundColor = isDarkMode? '#1e1e1e' : '#ffffff';
     const isDarkMode = true; // for testing purposes
-    const sliceLabelColor = isDarkMode ? "#ffffff" : "#000000";
+    const sliceLabelColor ="#000000";
     const smallSliceColor = "black";
 
     console.log("Chart Data:", chartData);

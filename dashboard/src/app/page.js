@@ -12,7 +12,7 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-center mb-8">Dashboard Overview</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Feature Usage</h2>
+            <h2 className="text-xl font-semibold mb-4">Fav Count by Category</h2>
             <FeaturesChart />
           </div>
           <div className="bg-white shadow-md rounded-lg p-6">
@@ -20,15 +20,11 @@ export default function Home() {
             <GenderChart />
           </div>
           <div className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Gender Distribution</h2>
-            <GenderChart />
-          </div>
-          <div className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">DeletedPetsChart</h2>
+            <h2 className="text-xl font-semibold mb-4">Deleted Pets Count</h2>
             <DeletedPetsChart />
           </div>
           <div className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">DeletedPetsChart</h2>
+            <h2 className="text-xl font-semibold mb-4">Age Distribution</h2>
              <AgeBarGraph />
           </div>
           
