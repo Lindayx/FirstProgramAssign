@@ -6,10 +6,8 @@ from flask_socketio import SocketIO, send, join_room
 import firebase_admin
 from firebase_admin import credentials, firestore
 import requests as http_requests
-from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:8081"}})
 app.config['SECRET_KEY'] = 'testing'
 
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -86,8 +84,6 @@ def send_email():
     try:
         data = request.get_json()
         print("Received data:", data)
-
-        # Make sure all required fields are present
         required_fields = ["to_email", "to_name", "pet_name", "adopter_name", "adopter_email"]
         for field in required_fields:
             if not data.get(field):
@@ -96,7 +92,7 @@ def send_email():
         # Send email via EmailJS
         response = http_requests.post(
             'https://api.emailjs.com/api/v1.0/email/send',
-            headers={'origin': 'http://localhost'},  # EmailJS requires this
+            headers={'origin': 'http://localhost'},
             json={
                 'service_id': 'service_9fhpvng',
                 'template_id': 'template_kx3u6ub',
