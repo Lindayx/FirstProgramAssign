@@ -4,10 +4,10 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO, send, join_room
 # Firebase Admin SDK for Firestore
-import firebase_admin
 from firebase_admin import credentials, firestore
 import requests as http_requests
 from flask_cors import CORS
+import json
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -17,7 +17,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 # firebase configuration 
-sa_key_path = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', 'serviceAccountKey.json')
+sa_key_path = json.loads(os.environ['GOOGLE_APPLICATION_CREDENTIALS_JSON'])
 if not firebase_admin._apps:
     cred = credentials.Certificate(sa_key_path)
     firebase_admin.initialize_app(cred)
