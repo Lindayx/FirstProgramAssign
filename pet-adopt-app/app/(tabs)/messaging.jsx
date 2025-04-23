@@ -11,6 +11,7 @@ import { collection, query, where, getDocs, addDoc, serverTimestamp, getDoc, upd
 import { db } from '../../config/FirebaseConfig'
 import { useRouter } from 'expo-router'
 import { useUser } from '@clerk/clerk-expo'
+import { useIsFocused } from '@react-navigation/native'
 
 export default function Messaging() {
   const [emailSearch, setEmailSearch] = useState('')
@@ -25,6 +26,7 @@ export default function Messaging() {
 
   const router = useRouter()
   const { user, isLoaded } = useUser()
+  const isFocused = useIsFocused()
   // check for existing chats
   const [existingChats, setExistingChats] = useState([])
   // Trigger search only when email is valid
@@ -112,7 +114,7 @@ export default function Messaging() {
     router.push(`/chat/${encodeURIComponent(chatId)}`)
   }
 
-  // load existing chats
+  // Reload chats when screen is focused or user state changes
   useEffect(() => {
     const loadChats = async () => {
       if (!isLoaded) return
@@ -121,7 +123,6 @@ export default function Messaging() {
         user.emailAddresses?.[0]?.emailAddress ||
         ''
       try {
-        //fetch UserFavPet doc
         const favQ = query(
           collection(db, 'UserFavPet'),
           where('email', '==', currentEmail)
@@ -150,8 +151,10 @@ export default function Messaging() {
         setExistingChats([])
       }
     }
-    loadChats()
-  }, [isLoaded, user])
+    if (isFocused) {
+      loadChats()
+    }
+  }, [isLoaded, user, isFocused])
 
   return (
     <View style={styles.container}>
@@ -188,7 +191,7 @@ export default function Messaging() {
         <Text style={styles.buttonText}>Search</Text>
       </TouchableOpacity>
       {/* Search results */}
-      {isSearchActive && (
+      {(isSearchActive || searchPerformed) && (
         <FlatList
           data={results}
           keyExtractor={(item) => item.id}

@@ -28,6 +28,7 @@ export default function PetDetails() {
   },[])
   const handleAdopt = async () => {
     try {
+      console.log("Adopt button pressed");
       const adopterEmail = user.primaryEmailAddress.emailAddress;
       const adopterName = user.fullName || "Someone";
       console.log("Adopter Email:", adopterEmail);
@@ -46,7 +47,8 @@ export default function PetDetails() {
       const petName = petData.name;
   
       // 🔁 Call backend to send the email
-      const response = await fetch("http://localhost:5001/send-email", {
+      console.log("Calling the backend to send email...");
+      const response = await fetch("http://localhost:5000/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -59,12 +61,14 @@ export default function PetDetails() {
           adopter_email: adopterEmail
         })
       });
+
+      console.log("Response from backend:", response);
   
       if (!response.ok) {
         throw new Error("Email sending failed");
       }
   
-      Alert.alert("Success", "Request sent to the pet owner!");
+      // Alert.alert("Success", "Request sent to the pet owner!");
   
     } catch (err) {
       console.error("Adopt error", err);
@@ -94,13 +98,14 @@ export default function PetDetails() {
       </ScrollView>
     {/* Adopt Me button */}
     <View style={styles.bottomContainer}>
-      <TouchableOpacity style={styles.adoptBtn}>
+      <TouchableOpacity style={styles.adoptBtn} onPress={handleAdopt}>
         <Text style={{
-          textAlign:'center',
-          fontFamily:'outfit-medium',
-          fontSize:20
-        }} onPress={handleAdopt}
-        >Adopt Me</Text>
+          textAlign: 'center',
+          fontFamily: 'outfit-medium',
+          fontSize: 20
+        }}>
+          Adopt Me
+        </Text>
       </TouchableOpacity>
     </View>
     </View>
