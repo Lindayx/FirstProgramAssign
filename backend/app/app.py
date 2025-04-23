@@ -1,12 +1,15 @@
 import os
 import datetime
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, send, join_room
 # Firebase Admin SDK for Firestore
 import firebase_admin
 from firebase_admin import credentials, firestore
+import requests as http_requests
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:8081"}})
 app.config['SECRET_KEY'] = 'testing'
 
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -75,3 +78,49 @@ def handle_chat_message(data):
         print(f'Message saved and broadcast in chat {chat_id}:', payload)
     except Exception as e:
         print(f'Error saving message for chat {chat_id}: {e}')
+
+import requests as http_requests
+
+@app.route('/send-email', methods=['POST'])
+def send_email():
+    try:
+        data = request.get_json()
+        print("Received data:", data)
+
+        # Make sure all required fields are present
+        required_fields = ["to_email", "to_name", "pet_name", "adopter_name", "adopter_email"]
+        for field in required_fields:
+            if not data.get(field):
+                raise ValueError(f"Missing required field: {field}")
+
+        # Send email via EmailJS
+        response = http_requests.post(
+            'https://api.emailjs.com/api/v1.0/email/send',
+            headers={'origin': 'http://localhost'},  # EmailJS requires this
+            json={
+                'service_id': 'service_9fhpvng',
+                'template_id': 'template_kx3u6ub',
+                'user_id': 'jguHc5uFzt4Mes9dK',
+                'template_params': {
+                    'to_email': data['to_email'],
+                    'to_name': data['to_name'],
+                    'pet_name': data['pet_name'],
+                    'adopter_name': data['adopter_name'],
+                    'adopter_email': data['adopter_email'],
+                }
+            }
+        )
+
+        print("EmailJS status code:", response.status_code)
+        print("EmailJS response:", response.text)
+
+        if response.status_code != 200:
+            raise Exception(f"EmailJS failed: {response.text}")
+
+        return jsonify({"status": "Email sent"}), 200
+
+    except Exception as e:
+        import traceback
+        print("❌ ERROR in /send-email")
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
