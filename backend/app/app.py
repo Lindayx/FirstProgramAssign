@@ -1,6 +1,7 @@
 import os
 import datetime
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from flask_socketio import SocketIO, send, join_room
 # Firebase Admin SDK for Firestore
 import firebase_admin
@@ -8,6 +9,8 @@ from firebase_admin import credentials, firestore
 import requests as http_requests
 
 app = Flask(__name__)
+# Enable CORS for all HTTP routes (allow requests from Web client)
+CORS(app)
 app.config['SECRET_KEY'] = 'testing'
 
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -81,6 +84,7 @@ import requests as http_requests
 
 @app.route('/send-email', methods=['POST'])
 def send_email():
+    print("Received request to /send-email")
     try:
         data = request.get_json()
         print("Received data:", data)

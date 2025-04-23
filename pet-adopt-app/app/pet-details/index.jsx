@@ -61,6 +61,8 @@ export default function PetDetails() {
           adopter_email: adopterEmail
         })
       });
+
+      console.log("Response from backend:", response);
   
       if (!response.ok) {
         throw new Error("Email sending failed");

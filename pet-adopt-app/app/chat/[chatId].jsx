@@ -67,6 +67,7 @@ export default function ChatScreen() {
       user.emailAddresses?.[0]?.emailAddress ||
       ''
     // Emit chat_message event to backend
+    console.log('Sending message:', text)
     socketRef.current.emit('chat_message', {
       chatId,
       text: text.trim(),
