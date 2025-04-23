@@ -1,23 +1,25 @@
+import eventlet
+eventlet.monkey_patch() 
 import os
 import datetime
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 from flask_socketio import SocketIO, send, join_room
 # Firebase Admin SDK for Firestore
 import firebase_admin
 from firebase_admin import credentials, firestore
 import requests as http_requests
+from flask_cors import CORS
+import json
 
 app = Flask(__name__)
-# Enable CORS for all HTTP routes (allow requests from Web client)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['SECRET_KEY'] = 'testing'
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 # firebase configuration 
-sa_key_path = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', 'serviceAccountKey.json')
+sa_key_path = json.loads(os.environ['GOOGLE_APPLICATION_CREDENTIALS_JSON'])
 if not firebase_admin._apps:
     cred = credentials.Certificate(sa_key_path)
     firebase_admin.initialize_app(cred)
@@ -84,7 +86,6 @@ import requests as http_requests
 
 @app.route('/send-email', methods=['POST'])
 def send_email():
-    print("Received request to /send-email")
     try:
         data = request.get_json()
         print("Received data:", data)

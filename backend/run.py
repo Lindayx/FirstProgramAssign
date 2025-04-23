@@ -9,9 +9,7 @@ def run():
         app.config['DEBUG'] = True
         socketio.run(app,
                      host='0.0.0.0',
-                     port=5000,
-                     debug=True,
-                     use_reloader=True)
+                     port=5000)
         print("server has stopped.")
     except Exception as e:
         print(f"error {e}", file=sys.stderr)
