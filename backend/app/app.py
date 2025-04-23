@@ -6,8 +6,10 @@ from flask_socketio import SocketIO, send, join_room
 import firebase_admin
 from firebase_admin import credentials, firestore
 import requests as http_requests
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['SECRET_KEY'] = 'testing'
 
 socketio = SocketIO(app, cors_allowed_origins="*")

@@ -7,7 +7,6 @@ import AboutPet from '../../components/PetDetails/AboutPet';
 import OwnerInfo from '../../components/PetDetails/OwnerInfo';
 import Colors from '../../constants/Colors';
 import { Linking, Alert } from 'react-native';
-import emailjs from '@emailjs/browser';
 import { useUser } from '@clerk/clerk-expo';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from './../../config/FirebaseConfig'; // update path as needed
