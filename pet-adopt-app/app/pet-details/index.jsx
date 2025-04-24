@@ -48,6 +48,19 @@ export default function PetDetails() {
   
       // 🔁 Call backend to send the email
       console.log("Calling the backend to send email...");
+      // const response = await fetch("http://localhost:5000", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json"
+      //   },
+      //   body: JSON.stringify({
+      //     to_email: ownerEmail,
+      //     to_name: petData.username || "Pet Owner",
+      //     pet_name: petName,
+      //     adopter_name: adopterName,
+      //     adopter_email: adopterEmail
+      //   })
+      // });
       const response = await fetch("https://firstprogramassign.onrender.com/send-email", {
         method: "POST",
         headers: {

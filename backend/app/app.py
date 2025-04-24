@@ -1,5 +1,6 @@
-import eventlet
-eventlet.monkey_patch() 
+## Remove eventlet monkey patching to avoid gRPC conflicts; use threading for SocketIO
+# import eventlet
+# eventlet.monkey_patch()
 import os
 import datetime
 from flask import Flask, request, jsonify
@@ -15,11 +16,13 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['SECRET_KEY'] = 'testing'
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+#will this cause Render to bug out?
+socketio = SocketIO(app,
+                   cors_allowed_origins="*",
+                   async_mode='threading')
 
 
-# firebase configuration 
-sa_key_path = json.loads(os.environ['GOOGLE_APPLICATION_CREDENTIALS_JSON'])
+sa_key_path = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON', 'serviceAccountKey.json')
 if not firebase_admin._apps:
     cred = credentials.Certificate(sa_key_path)
     firebase_admin.initialize_app(cred)
@@ -52,6 +55,7 @@ def handle_join(data):  # data should contain {'chatId': <chatId>}
 @socketio.on('chat_message')
 def handle_chat_message(data):
     # data should be a dict with keys: chatId, text, sender
+    print("SENDING MESSAGE")
     if not isinstance(data, dict):
         return
     chat_id = data.get('chatId')
@@ -67,8 +71,11 @@ def handle_chat_message(data):
             'sender': sender,
             'createdAt': datetime.datetime.utcnow()
         }
-        # add() returns (DocumentReference, WriteResult)
-        doc_ref, _ = messages_ref.add(message_data)
+        print("handle_chat_message: saving message to Firestore")
+        # Save the message document with an auto-generated ID
+        doc_ref = messages_ref.document()
+        doc_ref.set(message_data)
+        print(f"handle_chat_message: saved message with id {doc_ref.id}")
         # Prepare payload including generated ID
         payload = {
             'id': doc_ref.id,
@@ -77,10 +84,13 @@ def handle_chat_message(data):
             'createdAt': message_data['createdAt'].isoformat()
         }
         # Broadcast to all clients in the room
+        print(f"handle_chat_message: emitting payload to room {chat_id}")
         socketio.emit('chat_message', payload, room=chat_id)
-        print(f'Message saved and broadcast in chat {chat_id}:', payload)
+        print(f"handle_chat_message: emitted payload: {payload}")
     except Exception as e:
-        print(f'Error saving message for chat {chat_id}: {e}')
+        import traceback
+        print(f"Error in handle_chat_message for chat_id {chat_id}: {e}")
+        traceback.print_exc()
 
 import requests as http_requests
 

@@ -35,7 +35,8 @@ export default function ChatScreen() {
   useEffect(() => {
     if (!isLoaded || !chatId) return
     // Initialize WebSocket connection and join room
-    const SOCKET_SERVER_URL = 'http://localhost:5000'
+    const SOCKET_SERVER_URL = 'https://firstprogramassign.onrender.com'
+    // const SOCKET_SERVER_URL = 'http://localhost:5000'
     const socket = io(SOCKET_SERVER_URL)
     socketRef.current = socket
     socket.on('connect', () => {
